@@ -1,0 +1,23 @@
+/* 与 Web 端 globals.css :root 保持一致的色板 */
+page {
+  --bg: #f4f7f5;
+  --surface: #ffffff;
+  --brand: #2e7d68;
+  --brand-dark: #246354;
+  --brand-soft: #e6f2ee;
+  --sidebar: #123a30;
+  --sidebar-deep: #0c2b23;
+  --text: #1c2b27;
+  --muted: #6b7c76;
+  --border: #e2eae5;
+  --green: #2f855a;
+  --green-soft: #e7f5ee;
+  --blue: #2b6cb0;
+  --blue-soft: #e8f1fb;
+  --amber: #b7791f;
+  --amber-soft: #fdf3e2;
+  --red: #c53030;
+  --red-soft: #fdecec;
+  --gray-soft: #f0f3f1;
+  --gold: #f3c96b;
+}

@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="card filter-card">
+    <picker
+      wx:if="{{children.length > 1}}"
+      mode="selector"
+      range="{{childNames}}"
+      value="{{childIndex}}"
+      bindchange="onChildChange"
+    >
+      <view class="picker-pill">{{childNames[childIndex]}}<text class="caret"> ▾</text></view>
+    </picker>
+    <view wx:else class="picker-pill picker-pill--static">{{childNames[childIndex] || "我的孩子"}}</view>
+    <view class="muted small">本学期收费</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!children.length}}">
+    <empty-state
+      title="尚未关联孩子档案"
+      description="请联系园务管理员绑定家长账号后再查看收费信息。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="stats-grid">
+      <stat-tile class="stat-third" label="应缴总额" value="{{summary.totalAmountText}}" hint="{{childName}}" />
+      <stat-tile class="stat-third" label="已缴金额" value="{{summary.totalPaidText}}" tone="blue" />
+      <stat-tile class="stat-third" label="待缴金额" value="{{summary.totalOutstandingText}}" tone="rose" hint="{{summary.hasOutstanding ? '请留意缴费截止日期' : '已全部缴清'}}" />
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <view class="card-title">收费项目</view>
+        <view class="muted small">共 {{items.length}} 项</view>
+      </view>
+
+      <block wx:if="{{items.length}}">
+        <view class="fee-item" wx:for="{{items}}" wx:key="feeItemId">
+          <view class="fee-head">
+            <view class="fee-name">{{item.name}}</view>
+            <status-badge text="{{item.statusLabel}}" tone="{{item.tone}}" />
+          </view>
+          <view class="fee-sub">{{item.term}}<text wx:if="{{item.description}}"> · {{item.description}}</text></view>
+          <view class="fee-meta">
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">应缴</view>
+              <view class="fee-meta-value">{{item.amountText}}</view>
+            </view>
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">已缴</view>
+              <view class="fee-meta-value">{{item.paidText}}</view>
+            </view>
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">待缴</view>
+              <view class="fee-meta-value {{item.remainingCents > 0 ? 'amber-text' : 'green-text'}}">{{item.remainingText}}</view>
+            </view>
+          </view>
+          <view class="fee-due">
+            截止日期：{{item.dueDate}}
+            <text wx:if="{{item.overdue}}" class="overdue-tag">已逾期</text>
+          </view>
+        </view>
+      </block>
+      <empty-state wx:else title="暂无收费项目" description="园务发布收费项目后会显示在这里。" />
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <view class="card-title">缴费记录</view>
+      </view>
+      <block wx:if="{{payments.length}}">
+        <view class="list-row" wx:for="{{payments}}" wx:key="id">
+          <view class="list-main">
+            <view class="list-title">{{item.feeItemName}}</view>
+            <view class="list-sub">{{item.date}} · {{item.methodLabel}}<text wx:if="{{item.note}}"> · {{item.note}}</text></view>
+          </view>
+          <view class="money strong green-text">{{item.amountText}}</view>
+        </view>
+      </block>
+      <empty-state wx:else title="暂无缴费记录" description="线下缴费后由园务登记到账。" />
+    </view>
+
+    <view class="footer-hint">线上仅展示账目；如需缴费请联系园务，由园务登记到账。</view>
+  </block>
+</view>

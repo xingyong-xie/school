@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+  // Docker 构建阶段在 Linux 上执行 prisma generate，会自动生成对应引擎。
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  PARENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StudentStatus {
+  ACTIVE
+  GRADUATED
+  LEFT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  SICK
+  PERSONAL
+  ABSENT
+}
+
+enum LeaveType {
+  SICK
+  PERSONAL
+  OTHER
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  name         String
+  role         Role
+  phone        String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  teacher            Teacher?
+  children           Student[]      @relation("ParentChildren")
+  recordedAttendances Attendance[]  @relation("AttendanceRecorder")
+  requestedLeaves    LeaveRequest[] @relation("LeaveRequester")
+  reviewedLeaves     LeaveRequest[] @relation("LeaveReviewer")
+  recordedPayments   Payment[]      @relation("PaymentRecorder")
+}
+
+model Teacher {
+  id         Int     @id @default(autoincrement())
+  employeeNo String  @unique
+  specialty  String?
+  phone      String?
+  userId     Int     @unique
+  user       User    @relation(fields: [userId], references: [id])
+  classes    SchoolClass[]
+}
+
+model SchoolClass {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  ageGroup  String
+  capacity  Int      @default(25)
+  room      String?
+  teacherId Int?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+
+  students  Student[]
+  schedules Schedule[]
+}
+
+model Student {
+  id             Int           @id @default(autoincrement())
+  studentNo      String        @unique
+  name           String
+  gender         Gender
+  birthDate      DateTime
+  enrollmentDate DateTime      @default(now())
+  status         StudentStatus @default(ACTIVE)
+  phone          String?
+  address        String?       @db.Text
+  notes          String?       @db.Text
+  classId        Int?
+  class          SchoolClass?  @relation(fields: [classId], references: [id])
+  parentId       Int?
+  parent         User?         @relation("ParentChildren", fields: [parentId], references: [id])
+  createdAt      DateTime      @default(now())
+
+  attendances Attendance[]
+  leaves      LeaveRequest[]
+  payments    Payment[]
+
+  @@index([classId])
+  @@index([parentId])
+}
+
+model Attendance {
+  id           Int              @id @default(autoincrement())
+  studentId    Int
+  student      Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date         String
+  status       AttendanceStatus
+  note         String?          @db.Text
+  recordedById Int?
+  recordedBy   User?            @relation("AttendanceRecorder", fields: [recordedById], references: [id])
+  updatedAt    DateTime         @default(now()) @updatedAt
+
+  @@unique([studentId, date])
+  @@index([date])
+}
+
+model LeaveRequest {
+  id             Int         @id @default(autoincrement())
+  studentId      Int
+  student        Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type           LeaveType
+  startDate      String
+  endDate        String
+  reason         String      @db.Text
+  status         LeaveStatus @default(PENDING)
+  requestedById  Int?
+  requestedBy    User?       @relation("LeaveRequester", fields: [requestedById], references: [id])
+  reviewedById   Int?
+  reviewedBy     User?       @relation("LeaveReviewer", fields: [reviewedById], references: [id])
+  reviewedAt     DateTime?
+  reviewNote     String?     @db.Text
+  createdAt      DateTime    @default(now())
+
+  @@index([studentId])
+  @@index([status])
+}
+
+model Schedule {
+  id          Int         @id @default(autoincrement())
+  classId     Int
+  class       SchoolClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  weekday     Int
+  startTime   String
+  endTime     String
+  subject     String
+  teacherName String?
+
+  @@index([classId, weekday])
+}
+
+model FeeItem {
+  id          Int       @id @default(autoincrement())
+  name        String
+  term        String
+  amountCents Int
+  dueDate     String
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  payments    Payment[]
+
+  @@unique([name, term])
+}
+
+model Payment {
+  id           Int      @id @default(autoincrement())
+  studentId    Int
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feeItemId    Int
+  feeItem      FeeItem  @relation(fields: [feeItemId], references: [id], onDelete: Cascade)
+  amountCents  Int
+  method       String   @default("TRANSFER")
+  paidAt       DateTime @default(now())
+  note         String?  @db.Text
+  recordedById Int?
+  recordedBy   User?    @relation("PaymentRecorder", fields: [recordedById], references: [id])
+
+  @@index([studentId])
+  @@index([feeItemId])
+}

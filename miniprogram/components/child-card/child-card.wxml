@@ -1,0 +1,26 @@
+<view class="child-card" bindtap="onTap">
+  <view class="child-top">
+    <view class="avatar">{{child.initial}}</view>
+    <view class="child-info">
+      <view class="child-name">{{child.name}}</view>
+      <view class="child-sub">{{child.className || "未分班"}} · {{child.ageYears}} 岁</view>
+    </view>
+    <status-badge
+      wx:if="{{child.todayStatus}}"
+      text="{{child.todayStatus.label}}"
+      tone="{{child.todayStatus.tone}}"
+    />
+    <status-badge wx:else text="今日未登记" tone="gray" />
+  </view>
+  <view wx:if="{{child.todayStatus.note}}" class="child-note">{{child.todayStatus.note}}</view>
+  <view class="child-meta">
+    <view class="child-meta-item">
+      本月出勤 <text class="strong">{{child.monthPresentDays}} 天</text>
+    </view>
+    <view class="child-meta-item">
+      待缴
+      <text class="strong {{child.outstandingCents > 0 ? 'amber-text' : 'green-text'}}">{{child.outstandingText}}</text>
+    </view>
+  </view>
+  <view class="child-teacher">主班教师：{{child.teacherName || "待分配"}}</view>
+</view>

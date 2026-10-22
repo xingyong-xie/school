@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "考勤",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "stat-tile": "/components/stat-tile/stat-tile",
+    "empty-state": "/components/empty-state/empty-state",
+    "status-badge": "/components/status-badge/status-badge"
+  }
+}

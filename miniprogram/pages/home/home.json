@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "奇奥德 · 家长端",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "stat-tile": "/components/stat-tile/stat-tile",
+    "child-card": "/components/child-card/child-card",
+    "section-card": "/components/section-card/section-card",
+    "empty-state": "/components/empty-state/empty-state",
+    "status-badge": "/components/status-badge/status-badge"
+  }
+}

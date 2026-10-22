@@ -1,0 +1,8 @@
+<view class="card">
+  <view wx:if="{{title}}" class="card-head">
+    <view class="card-title">{{title}}</view>
+    <slot name="extra"></slot>
+  </view>
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+  <slot wx:else></slot>
+</view>

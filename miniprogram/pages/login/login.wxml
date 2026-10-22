@@ -1,0 +1,55 @@
+<view class="login-page">
+  <view class="login-hero">
+    <view class="brand-mark">
+      <image class="brand-logo" src="/assets/logo-mark.jpg" mode="aspectFill" />
+    </view>
+    <view class="hero-title">奇奥德</view>
+    <view class="hero-sub">家园共育 · 安心每一天</view>
+  </view>
+
+  <view class="login-card">
+    <view class="login-title">家长登录</view>
+    <view class="login-desc">查看孩子考勤、请假与缴费情况</view>
+
+    <view wx:if="{{notice}}" class="form-error">{{notice}}</view>
+
+    <view class="field">
+      <view class="field-label">账号</view>
+      <input
+        class="input"
+        value="{{username}}"
+        placeholder="请输入手机号或账号"
+        placeholder-class="input-placeholder"
+        bindinput="onUsername"
+      />
+    </view>
+
+    <view class="field">
+      <view class="field-label">密码</view>
+      <input
+        class="input"
+        password
+        value="{{password}}"
+        placeholder="请输入密码"
+        placeholder-class="input-placeholder"
+        bindinput="onPassword"
+        bindconfirm="onSubmit"
+      />
+    </view>
+
+    <view wx:if="{{error}}" class="form-error">{{error}}</view>
+
+    <button
+      class="btn btn-primary btn-block"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+      bindtap="onSubmit"
+    >登录</button>
+
+    <view wx:if="{{demo}}" class="demo-hint" bindtap="onDemoTap">
+      演示账号：p001 / parent123（点击填入）
+    </view>
+  </view>
+
+  <view class="login-foot">家长端 · 仅限家长账号使用</view>
+</view>

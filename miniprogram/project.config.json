@@ -1,0 +1,17 @@
+{
+  "description": "奇奥德幼儿园 · 家长端小程序",
+  "appid": "touristappid",
+  "projectname": "kindergarten-parent",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "libVersion": "3.4.0",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false,
+    "coverView": true
+  },
+  "condition": {}
+}

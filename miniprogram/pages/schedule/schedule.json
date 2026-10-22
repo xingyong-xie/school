@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "课程表",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

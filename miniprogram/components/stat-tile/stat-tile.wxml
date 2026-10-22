@@ -1,0 +1,5 @@
+<view class="stat-tile stat-tile--{{tone}}">
+  <view class="stat-label">{{label}}</view>
+  <view class="stat-value">{{value}}</view>
+  <view wx:if="{{hint}}" class="stat-hint">{{hint}}</view>
+</view>

@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="profile-hero">
+    <view class="profile-avatar">{{initial}}</view>
+    <view class="profile-info">
+      <view class="profile-name">{{user && user.name ? user.name : "家长"}}</view>
+      <view class="profile-role">家长 · 已关联 {{childrenCount}} 个孩子</view>
+    </view>
+  </view>
+
+  <view class="card menu-card">
+    <view class="menu-row" bindtap="openLeaves">
+      <view class="menu-icon">◷</view>
+      <view class="menu-label">请假记录</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="openFees">
+      <view class="menu-icon">¥</view>
+      <view class="menu-label">收费明细</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="openSchedule">
+      <view class="menu-icon">▦</view>
+      <view class="menu-label">班级课程表</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="onAbout">
+      <view class="menu-icon">ⓘ</view>
+      <view class="menu-label">关于小程序</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <button class="btn btn-block logout-btn" bindtap="onLogout">退出登录</button>
+
+  <view class="footer-hint">奇奥德家长端 v{{version}}</view>
+</view>

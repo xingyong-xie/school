@@ -1,0 +1,73 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!children.length}}">
+    <empty-state
+      title="尚未关联孩子档案"
+      description="请联系园务管理员绑定家长账号后再提交请假。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="card">
+      <view class="card-head">
+        <view class="card-title">请假信息</view>
+      </view>
+
+      <view class="field">
+        <view class="field-label">幼儿</view>
+        <picker mode="selector" range="{{childNames}}" value="{{childIndex}}" bindchange="onChildChange">
+          <view class="picker-value">{{childNames[childIndex]}}<text class="caret"> ▾</text></view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <view class="field-label">请假类型</view>
+        <picker mode="selector" range="{{typeLabels}}" value="{{typeIndex}}" bindchange="onTypeChange">
+          <view class="picker-value">{{typeLabels[typeIndex]}}<text class="caret"> ▾</text></view>
+        </picker>
+      </view>
+
+      <view class="date-grid">
+        <view class="field">
+          <view class="field-label">开始日期</view>
+          <picker mode="date" value="{{startDate}}" start="{{today}}" bindchange="onStartDate">
+            <view class="picker-value">{{startDate}}</view>
+          </picker>
+        </view>
+        <view class="field">
+          <view class="field-label">结束日期</view>
+          <picker mode="date" value="{{endDate}}" start="{{startDate}}" bindchange="onEndDate">
+            <view class="picker-value">{{endDate}}</view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="field">
+        <view class="field-label">请假事由</view>
+        <textarea
+          class="textarea"
+          value="{{reason}}"
+          maxlength="200"
+          placeholder="请简单说明请假原因，如：发烧在家休息"
+          placeholder-class="input-placeholder"
+          bindinput="onReason"
+        ></textarea>
+        <view class="counter">{{reason.length}}/200</view>
+      </view>
+
+      <button
+        class="btn btn-primary btn-block"
+        loading="{{submitting}}"
+        disabled="{{submitting}}"
+        bindtap="onSubmit"
+      >提交申请</button>
+    </view>
+
+    <view class="footer-hint">提交后由班级教师审批，审批结果可在请假列表查看。</view>
+  </block>
+</view>

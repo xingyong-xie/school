@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "提交请假",
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

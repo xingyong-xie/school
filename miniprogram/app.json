@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/attendance/attendance",
+    "pages/leaves/leaves",
+    "pages/profile/profile",
+    "pages/login/login",
+    "pages/leave-create/leave-create",
+    "pages/fees/fees",
+    "pages/schedule/schedule"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#123a30",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "奇奥德",
+    "backgroundColor": "#f4f7f5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#6b7c76",
+    "selectedColor": "#2e7d68",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/attendance/attendance",
+        "text": "考勤"
+      },
+      {
+        "pagePath": "pages/leaves/leaves",
+        "text": "请假"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

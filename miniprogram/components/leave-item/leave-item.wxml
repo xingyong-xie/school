@@ -1,0 +1,17 @@
+<view class="leave-item">
+  <view class="leave-main">
+    <view class="leave-title">
+      <text class="leave-name">{{leave.studentName}}</text>
+      <status-badge text="{{leave.typeLabel}}" tone="blue" />
+      <status-badge text="{{leave.statusLabel}}" tone="{{leave.tone}}" />
+    </view>
+    <view class="leave-sub">
+      {{leave.dateText}}<text wx:if="{{leave.className}}"> · {{leave.className}}</text>
+    </view>
+    <view class="leave-reason">{{leave.reason}}</view>
+    <view wx:if="{{leave.reviewedByName}}" class="leave-review">
+      {{leave.reviewedByName}} 审批<text wx:if="{{leave.reviewNote}}">：{{leave.reviewNote}}</text>
+    </view>
+  </view>
+  <view wx:if="{{leave.canCancel && showCancel}}" class="leave-action" catchtap="onCancel">撤销</view>
+</view>

@@ -1,0 +1,91 @@
+.filter-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 26rpx;
+}
+
+.picker-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 68rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 27rpx;
+  font-weight: 600;
+  max-width: 430rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker-pill--static {
+  background: var(--gray-soft);
+  color: var(--muted);
+}
+
+.caret {
+  font-size: 22rpx;
+  opacity: 0.65;
+}
+
+.day-card {
+  padding: 26rpx 28rpx;
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14rpx;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.day-label {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--brand-dark);
+}
+
+.course-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 0;
+  border-bottom: 1rpx dashed var(--border);
+}
+
+.course-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.course-time {
+  width: 190rpx;
+  flex-shrink: 0;
+  font-size: 25rpx;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.course-dash {
+  margin: 0 4rpx;
+}
+
+.course-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.course-subject {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.course-teacher {
+  margin-top: 4rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+}

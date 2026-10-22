@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+.claude
+.env
+.env.*
+prisma/dev.db
+prisma/dev.db-journal
+miniprogram
+docs
+README.md
+CLAUDE.md
+tsconfig.tsbuildinfo
+*.log
+.DS_Store

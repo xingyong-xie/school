@@ -1,0 +1,39 @@
+<view class="container container--with-fab">
+  <view class="tabs">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab {{status === item.key ? 'tab--active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onTab"
+    >
+      {{item.label}}
+      <text wx:if="{{item.count}}" class="tab-count">{{item.count}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <view wx:else class="card">
+    <block wx:if="{{leaves.length}}">
+      <leave-item
+        wx:for="{{leaves}}"
+        wx:key="id"
+        leave="{{item}}"
+        bind:cancel="onCancel"
+      />
+    </block>
+    <empty-state
+      wx:else
+      title="暂无请假记录"
+      description="需要请假时，可点击下方按钮提交申请。"
+    />
+  </view>
+
+  <view class="footer-hint">请假提交后由班级教师审批</view>
+  <button class="fab" bindtap="openCreate">＋ 提交请假</button>
+</view>
