@@ -24,6 +24,8 @@ function addDays(base, days) {
 }
 
 async function main() {
+  await prisma.diaryPhoto.deleteMany();
+  await prisma.diaryEntry.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.feeItem.deleteMany();
   await prisma.attendance.deleteMany();
@@ -383,6 +385,90 @@ async function main() {
         reviewedAt: addDays(today, -7),
       },
     ],
+  });
+
+  const diarySpecs = [
+    {
+      studentIndex: 0,
+      daysAgo: 1,
+      title: "第一次独立完成拼图",
+      content:
+        "今天区域活动时，一诺自己完成了 24 块拼图，过程中很专注，遇到困难也没有放弃，完成后开心地和同伴分享。",
+      mood: "FOCUSED",
+    },
+    {
+      studentIndex: 0,
+      daysAgo: 4,
+      title: "户外游戏的小帮手",
+      content:
+        "户外活动结束后，主动帮老师把小球一个个送回筐里，还提醒同伴排队，是老师的小帮手。",
+      mood: "HAPPY",
+    },
+    {
+      studentIndex: 1,
+      daysAgo: 2,
+      title: "午餐进步啦",
+      content:
+        "沐阳今天把蔬菜全部吃完了，虽然一开始有点犹豫，在老师的鼓励下尝试后说“还挺好吃的”。",
+      mood: "ENERGETIC",
+    },
+    {
+      studentIndex: 4,
+      daysAgo: 3,
+      title: "绘本分享时间",
+      content:
+        "安然在绘本分享环节给小朋友讲了《好饿的毛毛虫》，声音响亮，还能准确说出毛毛虫每天吃的食物。",
+      mood: "HAPPY",
+    },
+    {
+      studentIndex: 8,
+      daysAgo: 5,
+      title: "需要多一点耐心",
+      content:
+        "今天和同伴因为积木发生了小争执，情绪有点激动。老师单独沟通后，乐天已经愿意尝试用语言表达自己的想法。",
+      mood: "NEEDS_ATTENTION",
+    },
+    {
+      studentIndex: 8,
+      daysAgo: 8,
+      title: "午睡后的安静时光",
+      content: "午睡起床后自己整理好被褥，安静地看了一会儿绘本，情绪平稳。",
+      mood: null,
+    },
+    {
+      classIndex: 0,
+      daysAgo: 2,
+      title: "秋日自然探索",
+      content:
+        "全班一起到后花园寻找秋天的颜色，孩子们收集了落叶和果实，回到教室后做成了拼贴画，每个人都介绍了自己的作品。",
+      mood: "ENERGETIC",
+    },
+    {
+      classIndex: 1,
+      daysAgo: 6,
+      title: "亲子运动会报名",
+      content:
+        "本周六上午将举行秋季亲子运动会，项目包括接力跑、袋鼠跳和亲子运球，请家长提前在班级群报名并准备运动鞋。",
+      mood: null,
+    },
+  ];
+
+  await prisma.diaryEntry.createMany({
+    data: diarySpecs.map((item) => {
+      const isClassEntry = item.classIndex !== undefined;
+      const classIndex = isClassEntry
+        ? item.classIndex
+        : studentSpecs[item.studentIndex][4];
+      return {
+        studentId: isClassEntry ? null : students[item.studentIndex].id,
+        classId: isClassEntry ? classes[classIndex].id : null,
+        date: dateStr(addDays(today, -item.daysAgo)),
+        title: item.title,
+        content: item.content,
+        mood: item.mood,
+        authorId: teacherAccounts[classIndex].id,
+      };
+    }),
   });
 
   console.log("演示数据已写入。");

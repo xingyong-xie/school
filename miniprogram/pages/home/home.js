@@ -80,4 +80,10 @@ Page({
   openSchedule() {
     wx.navigateTo({ url: "/pages/schedule/schedule" });
   },
+
+  openDiaries() {
+    const children = (this.data.home && this.data.home.children) || [];
+    const suffix = children.length ? "?childId=" + children[0].id : "";
+    wx.navigateTo({ url: "/pages/diary/diary" + suffix });
+  },
 });

@@ -1,5 +1,6 @@
 import type {
   AttendanceStatus,
+  DiaryMood,
   Gender,
   LeaveStatus,
   LeaveType,
@@ -52,6 +53,22 @@ export const LEAVE_STATUS_LABELS: Record<LeaveStatus, string> = {
   REJECTED: "已驳回",
 };
 
+export const DIARY_MOOD_LABELS: Record<DiaryMood, string> = {
+  HAPPY: "开心",
+  FOCUSED: "专注",
+  ENERGETIC: "活力",
+  CALM: "安静",
+  NEEDS_ATTENTION: "需关注",
+};
+
+export const DIARY_MOODS: DiaryMood[] = [
+  "HAPPY",
+  "FOCUSED",
+  "ENERGETIC",
+  "CALM",
+  "NEEDS_ATTENTION",
+];
+
 export const PAYMENT_METHOD_LABELS: Record<string, string> = {
   TRANSFER: "银行转账",
   CASH: "现金",
@@ -74,9 +91,14 @@ export function categoryTone(value: string): string {
     case "PRESENT":
     case "APPROVED":
     case "ACTIVE":
+    case "HAPPY":
+    case "FOCUSED":
+    case "ENERGETIC":
+    case "CALM":
       return "green";
     case "LATE":
     case "PENDING":
+    case "NEEDS_ATTENTION":
       return "amber";
     case "SICK":
     case "PERSONAL":

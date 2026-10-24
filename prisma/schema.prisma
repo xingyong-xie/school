@@ -46,6 +46,14 @@ enum LeaveStatus {
   REJECTED
 }
 
+enum DiaryMood {
+  HAPPY
+  FOCUSED
+  ENERGETIC
+  CALM
+  NEEDS_ATTENTION
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   username     String   @unique
@@ -62,6 +70,7 @@ model User {
   requestedLeaves    LeaveRequest[] @relation("LeaveRequester")
   reviewedLeaves     LeaveRequest[] @relation("LeaveReviewer")
   recordedPayments   Payment[]      @relation("PaymentRecorder")
+  diaryEntries       DiaryEntry[]   @relation("DiaryAuthor")
 }
 
 model Teacher {
@@ -83,8 +92,9 @@ model SchoolClass {
   teacherId Int?
   teacher   Teacher? @relation(fields: [teacherId], references: [id])
 
-  students  Student[]
-  schedules Schedule[]
+  students     Student[]
+  schedules    Schedule[]
+  diaryEntries DiaryEntry[]
 }
 
 model Student {
@@ -104,9 +114,10 @@ model Student {
   parent         User?         @relation("ParentChildren", fields: [parentId], references: [id])
   createdAt      DateTime      @default(now())
 
-  attendances Attendance[]
-  leaves      LeaveRequest[]
-  payments    Payment[]
+  attendances  Attendance[]
+  leaves       LeaveRequest[]
+  payments     Payment[]
+  diaryEntries DiaryEntry[]
 
   @@index([classId])
   @@index([parentId])
@@ -189,4 +200,39 @@ model Payment {
 
   @@index([studentId])
   @@index([feeItemId])
+}
+
+model DiaryEntry {
+  id        Int          @id @default(autoincrement())
+  studentId Int?
+  student   Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classId   Int?
+  class     SchoolClass? @relation(fields: [classId], references: [id], onDelete: Cascade)
+  date      String
+  title     String?
+  content   String       @db.Text
+  mood      DiaryMood?
+  authorId  Int?
+  author    User?        @relation("DiaryAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  photos    DiaryPhoto[]
+
+  @@index([studentId, date])
+  @@index([classId, date])
+  @@index([date])
+  @@index([createdAt])
+}
+
+model DiaryPhoto {
+  id        Int        @id @default(autoincrement())
+  entryId   Int
+  entry     DiaryEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  data      Bytes      @db.MediumBlob
+  mimeType  String
+  size      Int
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  @@index([entryId, sortOrder])
 }

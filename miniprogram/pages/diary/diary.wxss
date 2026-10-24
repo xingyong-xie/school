@@ -1,0 +1,124 @@
+.filter-card {
+  padding: 24rpx 26rpx;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.picker-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 68rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 27rpx;
+  font-weight: 600;
+  max-width: 300rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker-pill--static {
+  background: var(--gray-soft);
+  color: var(--muted);
+}
+
+.caret {
+  font-size: 22rpx;
+  opacity: 0.65;
+}
+
+.month-control {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.month-arrow {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 16rpx;
+  background: var(--gray-soft);
+  color: var(--muted);
+  font-size: 34rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.month-text {
+  min-width: 150rpx;
+  text-align: center;
+  font-size: 27rpx;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.diary-entry {
+  margin-bottom: 20rpx;
+}
+
+.entry-head {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 10rpx;
+}
+
+.entry-date {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry-title {
+  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.entry-content {
+  font-size: 27rpx;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.photo-cell {
+  width: calc((100% - 24rpx) / 3);
+  height: 200rpx;
+  border-radius: 14rpx;
+  overflow: hidden;
+  background: var(--gray-soft);
+}
+
+.photo-cell image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.entry-author {
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+}

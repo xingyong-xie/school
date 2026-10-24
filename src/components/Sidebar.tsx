@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/attendance", label: "考勤管理", icon: "✓", roles: ["ADMIN", "TEACHER", "PARENT"] },
   { href: "/leaves", label: "请假管理", icon: "◷", roles: ["ADMIN", "TEACHER", "PARENT"] },
   { href: "/schedule", label: "班级课程表", icon: "▦", roles: ["ADMIN", "TEACHER", "PARENT"] },
+  { href: "/diaries", label: "成长日记", icon: "✿", roles: ["ADMIN", "TEACHER", "PARENT"] },
   { href: "/fees", label: "收费管理", icon: "¥", roles: ["ADMIN", "TEACHER", "PARENT"] },
 ];
 

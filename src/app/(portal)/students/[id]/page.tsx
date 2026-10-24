@@ -14,6 +14,7 @@ import { StatCard } from "@/components/StatCard";
 import { deleteStudent } from "@/actions/students";
 import {
   ATTENDANCE_LABELS,
+  DIARY_MOOD_LABELS,
   GENDER_LABELS,
   LEAVE_STATUS_LABELS,
   LEAVE_TYPE_LABELS,
@@ -63,6 +64,14 @@ export default async function StudentDetailPage({
         orderBy: { paidAt: "desc" },
         include: { feeItem: true, recordedBy: { select: { name: true } } },
       },
+      diaryEntries: {
+        orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+        take: 5,
+        include: {
+          author: { select: { name: true } },
+          photos: { select: { id: true } },
+        },
+      },
     },
   });
 
@@ -109,7 +118,7 @@ export default async function StudentDetailPage({
               <form action={deleteStudent} className="inline-form">
                 <input type="hidden" name="id" value={student.id} />
                 <ConfirmButton
-                  message={`确定删除 ${student.name} 的档案吗？相关考勤、请假和缴费记录也会一并删除。`}
+                  message={`确定删除 ${student.name} 的档案吗？相关考勤、请假、缴费和成长日记也会一并删除。`}
                   className="btn btn-danger"
                 >
                   删除档案
@@ -328,6 +337,62 @@ export default async function StudentDetailPage({
             </ul>
           ) : (
             <EmptyState title="暂无缴费记录" />
+          )}
+        </section>
+
+        <section className="card span-2">
+          <div className="card-head">
+            <h2>成长日记</h2>
+            <div className="head-actions">
+              {user.role !== "PARENT" ? (
+                <Link
+                  href={`/diaries/new?studentId=${student.id}&returnTo=${encodeURIComponent(`/students/${student.id}`)}`}
+                  className="btn btn-primary btn-sm"
+                >
+                  + 写日记
+                </Link>
+              ) : null}
+              <Link
+                href={`/diaries?studentId=${student.id}`}
+                className="text-link"
+              >
+                查看全部 →
+              </Link>
+            </div>
+          </div>
+          {student.diaryEntries.length ? (
+            <ul className="list">
+              {student.diaryEntries.map((entry) => (
+                <li key={entry.id} className="list-row">
+                  <div className="list-main">
+                    <div className="list-title">
+                      {entry.title ?? "成长日记"}
+                      <span className="muted small">
+                        {entry.date}
+                        {entry.author ? ` · ${entry.author.name}` : ""}
+                      </span>
+                    </div>
+                    <div className="list-sub">
+                      {entry.content.length > 60
+                        ? `${entry.content.slice(0, 60)}…`
+                        : entry.content}
+                    </div>
+                  </div>
+                  <div className="row-actions">
+                    {entry.photos.length ? (
+                      <span className="muted small">▣ {entry.photos.length}</span>
+                    ) : null}
+                    {entry.mood ? (
+                      <Badge tone={categoryTone(entry.mood)}>
+                        {DIARY_MOOD_LABELS[entry.mood]}
+                      </Badge>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState title="暂无成长日记" />
           )}
         </section>
       </div>

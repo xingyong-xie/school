@@ -24,6 +24,14 @@ module.exports = {
   fees(id) {
     return get("/miniapp/children/" + id + "/fees");
   },
+  diaries(id, month) {
+    return get(
+      "/miniapp/children/" +
+        id +
+        "/diaries?month=" +
+        encodeURIComponent(month || ""),
+    );
+  },
   leaves(status) {
     return get("/miniapp/leaves?status=" + encodeURIComponent(status || "ALL"));
   },

@@ -47,6 +47,10 @@
         <view class="quick-icon">▦</view>
         <view class="quick-text">课程表</view>
       </view>
+      <view class="quick-item" bindtap="openDiaries">
+        <view class="quick-icon">✿</view>
+        <view class="quick-text">成长日记</view>
+      </view>
     </view>
 
     <section-card title="孩子档案">

@@ -128,6 +128,7 @@ const SERVICE = "kindergarten-web";
 - 必须使用真实小程序 AppID，并在开发者工具中确认已关联云环境。
 - `project.config.json` 中的 `appid` 从 `touristappid` 改为真实 AppID。
 - 云托管调用不需要在公众平台配置 request 合法域名。
+- **成长日记照片**通过普通 HTTPS `<image>` 加载，不走 `callContainer`：需要把云托管服务的公网 HTTPS 域名加入公众平台「开发管理 → 服务器域名 → downloadFile 合法域名」，并同步修改 `config.js` 的 `MEDIA_HOST`。
 - 基础库需 ≥ 2.23.0（项目当前使用 3.4.0）。
 
 本地调试可把 `MODE` 改为 `"http"`，继续请求 `http://localhost:3000`。
@@ -161,6 +162,8 @@ const SERVICE = "kindergarten-web";
 - [ ] Web 提交一次表单（如新增考勤），确认 Server Actions 正常
 - [ ] 小程序 `p001/parent123` 登录成功
 - [ ] 家长只能看到自己的孩子；越权访问返回 404
+- [ ] 家长可打开成长日记并加载照片；他人图片地址访问返回 404
+- [ ] 班级日记对该班全体家长可见，其他班家长不可见
 - [ ] `t001` / `admin` 访问 `/api/miniapp/*` 返回 403
 - [ ] 各表行数与源库一致
 - [ ] 出生日期、缴费时间、当天考勤显示正确（时区 Asia/Shanghai）

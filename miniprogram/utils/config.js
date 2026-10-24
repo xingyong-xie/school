@@ -17,11 +17,16 @@ const HTTP_HOSTS = {
 };
 const HTTP_ENV = "dev";
 
+// 云托管服务的公网 HTTPS 域名，用于成长日记等 <image> 资源。
+// 需要在公众平台「服务器域名 → downloadFile 合法域名」中加入该域名。
+const MEDIA_HOST = "https://your-domain.example.com";
+
 module.exports = {
   mode: MODE,
   envId: ENV_ID,
   service: SERVICE,
   apiPrefix: "/api",
   httpBaseURL: HTTP_HOSTS[HTTP_ENV] + "/api",
+  mediaBaseURL: MODE === "cloud" ? MEDIA_HOST : HTTP_HOSTS[HTTP_ENV],
   showDemoHint: MODE === "http" && HTTP_ENV === "dev",
 };
