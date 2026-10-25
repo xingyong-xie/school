@@ -1,0 +1,55 @@
+.day-card {
+  padding: 26rpx 28rpx;
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.day-label {
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.course-row {
+  display: flex;
+  gap: 22rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.course-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.course-time {
+  width: 190rpx;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.course-dash {
+  margin: 0 4rpx;
+}
+
+.course-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.course-subject {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.course-teacher {
+  margin-top: 4rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+}

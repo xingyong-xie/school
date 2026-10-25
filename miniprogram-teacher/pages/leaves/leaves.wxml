@@ -1,0 +1,66 @@
+<view class="container">
+  <view class="tabs">
+    <view
+      class="tab {{status === item.key ? 'tab--active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="key"
+      data-status="{{item.key}}"
+      bindtap="onTabTap"
+    >
+      {{item.label}}<text class="tab-count">{{item.count}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!leaves.length}}">
+    <empty-state
+      title="暂无请假申请"
+      description="家长提交请假后会显示在这里。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="card leave-card" wx:for="{{leaves}}" wx:key="id">
+      <view class="leave-head">
+        <view class="leave-main">
+          <view class="leave-name">{{item.studentName}}</view>
+          <view class="leave-sub">{{item.className}} · {{item.typeLabel}}</view>
+        </view>
+        <status-badge text="{{item.statusLabel}}" tone="{{item.tone}}" />
+      </view>
+
+      <view class="leave-date">{{item.dateText}}</view>
+      <view class="leave-reason">{{item.reason}}</view>
+
+      <view class="leave-meta">
+        <text wx:if="{{item.requestedByName}}">申请人：{{item.requestedByName}}</text>
+        <text wx:if="{{item.reviewedByName}}"> · 审批人：{{item.reviewedByName}}</text>
+      </view>
+      <view wx:if="{{item.reviewNote}}" class="leave-note">审批备注：{{item.reviewNote}}</view>
+
+      <view wx:if="{{item.canReview}}" class="leave-actions">
+        <button
+          class="btn btn-sm btn-secondary action-reject"
+          data-id="{{item.id}}"
+          data-name="{{item.studentName}}"
+          data-decision="REJECTED"
+          bindtap="onReview"
+        >驳回</button>
+        <button
+          class="btn btn-sm btn-primary action-approve"
+          data-id="{{item.id}}"
+          data-name="{{item.studentName}}"
+          data-decision="APPROVED"
+          bindtap="onReview"
+        >批准</button>
+      </view>
+    </view>
+
+    <view class="footer-hint">审批结果会实时同步给家长</view>
+  </block>
+</view>

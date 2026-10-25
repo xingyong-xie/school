@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="card filter-card">
+    <view class="filter-row">
+      <class-switcher
+        classes="{{classes}}"
+        value="{{selectedClassId}}"
+        bind:classchange="onClassChange"
+      />
+      <view class="muted small">按班级汇总 · 只读</view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!selectedClassId}}">
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="stats-grid">
+      <stat-tile class="stat-third" label="应缴总额" value="{{summary.expectedText}}" hint="{{summary.studentCount}} 名幼儿" />
+      <stat-tile class="stat-third" label="已缴金额" value="{{summary.paidText}}" tone="blue" />
+      <stat-tile class="stat-third"
+        label="待缴金额"
+        value="{{summary.outstandingText}}"
+        tone="rose"
+        hint="收缴率 {{summary.rateText}}"
+      />
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <view class="card-title">收费项目</view>
+        <view class="muted small">共 {{summary.feeItemCount}} 项</view>
+      </view>
+      <block wx:if="{{feeItems.length}}">
+        <view class="list-row" wx:for="{{feeItems}}" wx:key="id">
+          <view class="list-main">
+            <view class="list-title">{{item.name}}</view>
+            <view class="list-sub">{{item.term}} · 截止 {{item.dueDate}}</view>
+          </view>
+          <view class="money strong">{{item.amountText}}</view>
+        </view>
+      </block>
+      <empty-state wx:else title="暂无收费项目" description="园务发布收费项目后会显示在这里。" />
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <view class="card-title">幼儿缴费情况</view>
+        <view class="muted small">{{students.length}} 人</view>
+      </view>
+      <block wx:if="{{students.length}}">
+        <view class="student-fee" wx:for="{{students}}" wx:key="id">
+          <view class="student-fee-head">
+            <view class="list-main">
+              <view class="list-title">{{item.name}}</view>
+              <view class="list-sub">{{item.studentNo}}</view>
+            </view>
+            <status-badge text="{{item.statusLabel}}" tone="{{item.tone}}" />
+          </view>
+          <view class="student-fee-meta">
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">应缴</view>
+              <view class="fee-meta-value">{{item.expectedText}}</view>
+            </view>
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">已缴</view>
+              <view class="fee-meta-value">{{item.paidText}}</view>
+            </view>
+            <view class="fee-meta-col">
+              <view class="fee-meta-label">待缴</view>
+              <view class="fee-meta-value {{item.outstandingCents > 0 ? 'amber-text' : 'green-text'}}">{{item.outstandingText}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+      <empty-state wx:else title="暂无幼儿缴费数据" description="班级没有在园幼儿或尚未产生收费记录。" />
+    </view>
+
+    <view class="footer-hint">教师端仅展示收费概览；缴费由园务登记到账。</view>
+  </block>
+</view>

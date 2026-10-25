@@ -70,6 +70,22 @@ export async function parentChildIds(userId: number): Promise<number[]> {
   return children.map((item) => item.id);
 }
 
+/** 按当前角色判断能否访问某名幼儿（管理员全部、教师本班、家长本人孩子）。 */
+export async function userCanAccessStudent(
+  user: SessionUser,
+  studentId: number,
+): Promise<boolean> {
+  if (user.role === "ADMIN") return true;
+  if (user.role === "TEACHER") {
+    return teacherCanAccessStudent(user.id, studentId);
+  }
+  const student = await prisma.student.findFirst({
+    where: { id: studentId, parentId: user.id },
+    select: { id: true },
+  });
+  return Boolean(student);
+}
+
 /** 校验教师是否负责该学生所在班级。 */
 export async function teacherCanAccessStudent(
   userId: number,

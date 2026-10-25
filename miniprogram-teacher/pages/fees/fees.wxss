@@ -1,0 +1,46 @@
+.stats-grid {
+  margin-bottom: 8rpx;
+}
+
+.student-fee {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.student-fee:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.student-fee-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.student-fee-meta {
+  display: flex;
+  margin-top: 16rpx;
+  padding: 14rpx 18rpx;
+  border-radius: 16rpx;
+  background: #fcfdfd;
+  border: 1rpx solid var(--border);
+}
+
+.fee-meta-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.fee-meta-label {
+  font-size: 21rpx;
+  color: var(--muted);
+}
+
+.fee-meta-value {
+  margin-top: 2rpx;
+  font-size: 25rpx;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

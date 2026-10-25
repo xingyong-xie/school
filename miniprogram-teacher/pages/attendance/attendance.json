@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "考勤登记",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "class-switcher": "/components/class-switcher/class-switcher",
+    "status-badge": "/components/status-badge/status-badge",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

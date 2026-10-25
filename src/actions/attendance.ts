@@ -3,12 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import type { AttendanceStatus } from "@prisma/client";
+import { ApiError } from "@/lib/api";
 import { prisma } from "@/lib/db";
 import { requireStaff, teacherCanAccessClass } from "@/lib/guards";
 import { int, str, withError, withSuccess } from "@/lib/forms";
 import { ATTENDANCE_OPTIONS } from "@/lib/constants";
-
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+import { saveClassAttendance } from "@/lib/services/attendance";
+import { isValidDateString } from "@/lib/format";
 
 export async function saveAttendance(formData: FormData): Promise<void> {
   const user = await requireStaff();
@@ -17,7 +18,9 @@ export async function saveAttendance(formData: FormData): Promise<void> {
   const date = str(formData, "date");
 
   if (!classId) redirect(withError("/attendance", "请选择班级"));
-  if (!DATE_PATTERN.test(date)) redirect(withError("/attendance", "日期格式不正确"));
+  if (!isValidDateString(date)) {
+    redirect(withError("/attendance", "请选择有效日期"));
+  }
 
   if (user.role === "TEACHER" && !(await teacherCanAccessClass(user.id, classId))) {
     redirect(withError("/attendance", "只能登记自己负责班级的考勤"));
@@ -43,25 +46,19 @@ export async function saveAttendance(formData: FormData): Promise<void> {
     redirect(withError(`/attendance?classId=${classId}&date=${date}`, "没有可保存的考勤数据"));
   }
 
-  await prisma.$transaction(
-    rows.map((row) =>
-      prisma.attendance.upsert({
-        where: { studentId_date: { studentId: row.studentId, date } },
-        create: {
-          studentId: row.studentId,
-          date,
-          status: row.status,
-          note: row.note,
-          recordedById: user.id,
-        },
-        update: {
-          status: row.status,
-          note: row.note,
-          recordedById: user.id,
-        },
-      }),
-    ),
-  );
+  try {
+    await saveClassAttendance({
+      classId,
+      date,
+      rows,
+      recordedById: user.id,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      redirect(withError(`/attendance?classId=${classId}&date=${date}`, error.message));
+    }
+    throw error;
+  }
 
   revalidatePath("/attendance");
   revalidatePath("/");

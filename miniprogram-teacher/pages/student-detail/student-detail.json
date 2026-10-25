@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "幼儿档案",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "stat-tile": "/components/stat-tile/stat-tile",
+    "section-card": "/components/section-card/section-card",
+    "status-badge": "/components/status-badge/status-badge",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

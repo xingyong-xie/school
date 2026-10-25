@@ -6,6 +6,7 @@ import type { Gender, StudentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/guards";
 import { hashPassword } from "@/lib/auth";
+import { isValidDateString } from "@/lib/format";
 import {
   dateString,
   int,
@@ -92,13 +93,12 @@ function readStudentFields(formData: FormData): StudentFields {
 
   if (!name) return { ok: false, error: "请填写幼儿姓名" };
   if (!studentNo) return { ok: false, error: "请填写学号" };
-  if (!birthDate) return { ok: false, error: "请选择出生日期" };
+  if (!birthDate || !isValidDateString(birthDate)) {
+    return { ok: false, error: "请选择有效的出生日期" };
+  }
   if (!GENDERS.includes(gender)) return { ok: false, error: "请选择性别" };
 
   const birth = new Date(`${birthDate}T00:00:00.000Z`);
-  if (Number.isNaN(birth.getTime())) {
-    return { ok: false, error: "出生日期格式不正确" };
-  }
 
   return {
     ok: true,

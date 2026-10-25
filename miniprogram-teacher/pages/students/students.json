@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "幼儿名单",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "class-switcher": "/components/class-switcher/class-switcher",
+    "roster-item": "/components/roster-item/roster-item",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

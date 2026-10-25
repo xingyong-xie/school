@@ -1,0 +1,81 @@
+<view class="container container--with-fab">
+  <view class="card filter-card">
+    <view class="filter-row">
+      <class-switcher
+        classes="{{classes}}"
+        value="{{selectedClassId}}"
+        bind:classchange="onClassChange"
+      />
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="picker-pill date-pill">{{date}}<text class="caret"> ▾</text></view>
+      </picker>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!selectedClassId}}">
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="summary-row">
+      <view class="summary-text">
+        已登记 <text class="strong">{{summary.recorded}}</text> / {{summary.total}} 人
+        <text wx:if="{{summary.recorded === summary.total && summary.total}}" class="green-text"> · 已完成</text>
+      </view>
+      <view class="text-link" bindtap="markAllPresent">全部出勤</view>
+    </view>
+
+    <view class="card student-card" wx:for="{{students}}" wx:key="id">
+      <view class="student-head">
+        <view class="student-main">
+          <view class="student-name">{{item.name}}</view>
+          <view class="student-sub">
+            {{item.studentNo}}
+            <text wx:if="{{item.recorded}}"> · 已由 {{item.recordedByName || "教师"}} 登记</text>
+          </view>
+        </view>
+        <status-badge text="{{item.draftLabel}}" tone="{{item.draftTone}}" />
+      </view>
+
+      <view class="chips">
+        <view
+          class="chip {{item.draftStatus === option.value ? 'chip--active' : ''}}"
+          wx:for="{{statusOptions}}"
+          wx:for-item="option"
+          wx:for-index="statusIndex"
+          wx:key="value"
+          data-index="{{index}}"
+          data-value="{{option.value}}"
+          bindtap="onStatusTap"
+        >{{option.label}}</view>
+      </view>
+
+      <input
+        class="note-input"
+        value="{{item.draftNote}}"
+        placeholder="备注（可选，如迟到原因）"
+        placeholder-class="note-placeholder"
+        data-index="{{index}}"
+        bindinput="onNoteInput"
+      />
+    </view>
+
+    <button
+      class="btn btn-primary btn-block save-btn"
+      loading="{{saving}}"
+      disabled="{{saving || !dirty}}"
+      bindtap="onSave"
+    >{{dirty ? "保存考勤" : "考勤已是最新"}}</button>
+
+    <view class="footer-hint">保存后会覆盖该日期的考勤记录</view>
+  </block>
+</view>

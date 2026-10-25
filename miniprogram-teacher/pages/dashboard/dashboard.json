@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "教师工作台",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "class-switcher": "/components/class-switcher/class-switcher",
+    "stat-tile": "/components/stat-tile/stat-tile",
+    "section-card": "/components/section-card/section-card",
+    "status-badge": "/components/status-badge/status-badge",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

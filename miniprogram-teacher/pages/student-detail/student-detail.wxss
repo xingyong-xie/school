@@ -1,0 +1,101 @@
+.student-hero {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.hero-avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 30rpx;
+  background: var(--gold);
+  color: #3a2a05;
+  font-size: 48rpx;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx 0;
+}
+
+.info-item {
+  width: 50%;
+}
+
+.info-label {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+
+.info-value {
+  margin-top: 4rpx;
+  font-size: 27rpx;
+  color: var(--text);
+}
+
+.info-line {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed var(--border);
+  font-size: 24rpx;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.contact-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-name {
+  font-size: 29rpx;
+  font-weight: 600;
+}
+
+.contact-phone {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.today-line {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 18rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+.list-arrow {
+  color: #b5c3be;
+  font-size: 32rpx;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 6rpx;
+}
+
+.detail-actions .btn {
+  flex: 1;
+}

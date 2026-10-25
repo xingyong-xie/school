@@ -13,9 +13,7 @@ import {
   withSuccess,
 } from "@/lib/forms";
 import { PAYMENT_METHODS } from "@/lib/constants";
-import { yuanToCents } from "@/lib/format";
-
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+import { isValidDateString, yuanToCents } from "@/lib/format";
 
 export async function createFeeItem(formData: FormData): Promise<void> {
   await requireAdmin();
@@ -29,7 +27,9 @@ export async function createFeeItem(formData: FormData): Promise<void> {
   if (!name) redirect(withError("/fees", "请填写收费项目名称"));
   if (!term) redirect(withError("/fees", "请填写所属学期"));
   if (amountCents <= 0) redirect(withError("/fees", "收费金额必须大于 0"));
-  if (!DATE_PATTERN.test(dueDate)) redirect(withError("/fees", "请选择缴费截止日期"));
+  if (!isValidDateString(dueDate)) {
+    redirect(withError("/fees", "请选择有效的缴费截止日期"));
+  }
 
   const duplicate = await prisma.feeItem.findUnique({
     where: { name_term: { name, term } },

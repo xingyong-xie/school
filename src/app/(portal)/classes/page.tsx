@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireUser, teacherClassIds } from "@/lib/guards";
+import { requireStaff, teacherClassIds } from "@/lib/guards";
 import { PageHeader } from "@/components/PageHeader";
 import { Alert } from "@/components/Alert";
 import { EmptyState } from "@/components/EmptyState";
@@ -16,8 +15,7 @@ export default async function ClassesPage({
 }: {
   searchParams?: SearchParams;
 }) {
-  const user = await requireUser();
-  if (user.role === "PARENT") redirect("/");
+  const user = await requireStaff();
 
   const error = getParam(searchParams, "error");
   const success = getParam(searchParams, "success");

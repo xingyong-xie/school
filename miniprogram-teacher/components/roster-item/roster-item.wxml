@@ -1,0 +1,16 @@
+<view class="roster" bindtap="onTap">
+  <view class="roster-avatar">{{initial}}</view>
+  <view class="roster-main">
+    <view class="roster-name">{{student.name}}</view>
+    <view class="roster-sub">
+      {{student.studentNo}}<text wx:if="{{student.ageYears}}"> · {{student.ageYears}} 岁</text>
+    </view>
+  </view>
+  <status-badge
+    wx:if="{{student.todayStatus}}"
+    text="{{student.todayStatus.label}}"
+    tone="{{student.todayStatus.tone}}"
+  />
+  <status-badge wx:else text="未登记" tone="gray" />
+  <view class="roster-arrow">›</view>
+</view>

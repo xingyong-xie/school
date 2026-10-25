@@ -1,0 +1,100 @@
+.tabs {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--border);
+  border-radius: 22rpx;
+  padding: 10rpx;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  border-radius: 16rpx;
+  font-size: 25rpx;
+  color: var(--muted);
+}
+
+.tab--active {
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-weight: 600;
+}
+
+.tab-count {
+  margin-left: 6rpx;
+  font-size: 21rpx;
+  opacity: 0.75;
+}
+
+.leave-card {
+  padding: 28rpx;
+}
+
+.leave-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.leave-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.leave-name {
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.leave-sub {
+  margin-top: 4rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+}
+
+.leave-date {
+  margin-top: 18rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.leave-reason {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.leave-meta {
+  margin-top: 14rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+}
+
+.leave-note {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: var(--brand-dark);
+}
+
+.leave-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 22rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx dashed var(--border);
+}
+
+.action-reject {
+  flex: 1;
+  color: var(--red);
+}
+
+.action-approve {
+  flex: 2;
+}

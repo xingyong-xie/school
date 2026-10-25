@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+}
+
+.stat-tile {
+  width: 100%;
+  background: var(--surface);
+  border: 1rpx solid var(--border);
+  border-radius: 24rpx;
+  padding: 24rpx 26rpx;
+  box-sizing: border-box;
+  box-shadow: 0 2rpx 8rpx rgba(20, 40, 33, 0.03);
+}
+
+.stat-label {
+  font-size: 23rpx;
+  color: var(--muted);
+}
+
+.stat-value {
+  margin-top: 8rpx;
+  font-size: 42rpx;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stat-hint {
+  margin-top: 6rpx;
+  font-size: 21rpx;
+  color: var(--muted);
+}
+
+.stat-tile--green .stat-value {
+  color: var(--brand);
+}
+
+.stat-tile--blue .stat-value {
+  color: var(--blue);
+}
+
+.stat-tile--amber .stat-value {
+  color: var(--amber);
+}
+
+.stat-tile--rose .stat-value {
+  color: var(--red);
+}

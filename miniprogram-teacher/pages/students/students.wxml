@@ -1,0 +1,57 @@
+<view class="container">
+  <view class="card filter-card">
+    <view class="filter-row">
+      <class-switcher
+        classes="{{classes}}"
+        value="{{selectedClassId}}"
+        bind:classchange="onClassChange"
+      />
+      <view class="status-tabs">
+        <view
+          class="status-tab {{status === 'ACTIVE' ? 'status-tab--active' : ''}}"
+          data-status="ACTIVE"
+          bindtap="onStatusTap"
+        >在园</view>
+        <view
+          class="status-tab {{status === 'ALL' ? 'status-tab--active' : ''}}"
+          data-status="ALL"
+          bindtap="onStatusTap"
+        >全部</view>
+      </view>
+    </view>
+    <view wx:if="{{className}}" class="muted small class-hint">
+      {{className}}<text wx:if="{{ageGroup}}"> · {{ageGroup}}</text> · 共 {{students.length}} 人
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!selectedClassId}}">
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:elif="{{!students.length}}">
+    <empty-state
+      title="暂无幼儿档案"
+      description="该班级还没有{{status === 'ACTIVE' ? '在园' : ''}}幼儿。"
+    />
+  </block>
+
+  <view wx:else class="card roster-card">
+    <roster-item
+      wx:for="{{students}}"
+      wx:key="id"
+      student="{{item}}"
+      bind:studenttap="openStudent"
+    />
+  </view>
+
+  <view class="footer-hint">点击幼儿可查看档案、家长联系方式和本月考勤</view>
+</view>

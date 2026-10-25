@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "收费情况",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "class-switcher": "/components/class-switcher/class-switcher",
+    "stat-tile": "/components/stat-tile/stat-tile",
+    "status-badge": "/components/status-badge/status-badge",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

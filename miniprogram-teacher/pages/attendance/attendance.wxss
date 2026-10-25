@@ -1,0 +1,85 @@
+.date-pill {
+  background: var(--gray-soft);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rpx 8rpx 20rpx;
+}
+
+.summary-text {
+  font-size: 26rpx;
+  color: var(--muted);
+}
+
+.student-card {
+  padding: 26rpx 28rpx;
+}
+
+.student-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 18rpx;
+}
+
+.student-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-name {
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.student-sub {
+  margin-top: 4rpx;
+  font-size: 23rpx;
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.chip {
+  padding: 12rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--gray-soft);
+  color: var(--muted);
+  font-size: 25rpx;
+  border: 1rpx solid transparent;
+}
+
+.chip--active {
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  border-color: rgba(46, 125, 104, 0.24);
+  font-weight: 600;
+}
+
+.note-input {
+  margin-top: 18rpx;
+  height: 72rpx;
+  background: #fcfdfd;
+  border: 1rpx solid var(--border);
+  border-radius: 16rpx;
+  padding: 0 22rpx;
+  font-size: 25rpx;
+}
+
+.note-placeholder {
+  color: #9aa8a3;
+}
+
+.save-btn {
+  margin-top: 8rpx;
+}

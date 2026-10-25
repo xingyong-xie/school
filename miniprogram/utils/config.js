@@ -4,7 +4,7 @@
  *   需要真实小程序 AppID，并填写下方 ENV_ID / SERVICE。
  * - "http"：本地或普通 HTTPS 域名调试，使用 wx.request。
  */
-const MODE = "cloud";
+const MODE = "http";
 
 // 云开发环境 ID（微信云托管所属环境）
 const ENV_ID = "your-cloud-env-id";

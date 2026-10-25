@@ -8,6 +8,20 @@ export function fmtMoney(cents: number): string {
   return moneyFormatter.format(cents / 100);
 }
 
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** 校验字符串是真实存在的 YYYY-MM-DD 日历日期（拒绝 2026-02-31 等）。 */
+export function isValidDateString(value: string): boolean {
+  if (!DATE_PATTERN.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  );
+}
+
 /** 将 YYYY-MM-DD 或 Date 格式化为 YYYY-MM-DD。 */
 export function fmtDate(value: Date | string | null | undefined): string {
   if (!value) return "—";

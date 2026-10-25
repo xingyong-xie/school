@@ -103,6 +103,32 @@ const SERVICE = "kindergarten-web";   // 云托管服务名
 - 云托管服务端口 80，健康检查路径 `/api/health`。
 - 发布前需注册正式小程序 AppID，并完成小程序备案。
 
+## 教师端微信小程序
+
+`miniprogram-teacher/` 是独立的教师端原生小程序，仅面向教师角色，提供：
+
+- 工作台：负责班级概览、今日考勤进度、未登记名单、待审批请假、最近日记
+- 考勤：按班级和日期登记幼儿出勤/迟到/病假/事假/缺勤，可填写备注、一键全部出勤
+- 请假：按状态筛选、批准/驳回并填写审批备注
+- 幼儿名单与档案：本班幼儿列表、家长联系人、本月考勤汇总、最近日记
+- 成长日记：给某个幼儿或整个班级写日记，支持最多 6 张照片、编辑与删除
+- 课程表、收费情况：按班级只读查看
+
+### 本地调试
+
+1. 保持 Web 端服务运行：`npm run dev`。
+2. 用微信开发者工具导入目录 `miniprogram-teacher/`，AppID 可先用 `touristappid`。
+3. `miniprogram-teacher/utils/config.js` 默认 `MODE = "http"`，指向 `http://localhost:3000`。
+4. 勾选「不校验合法域名」，使用 `t001 / teacher123` 登录；家长和管理员账号会被拒绝。
+
+### 代码复用说明
+
+教师端与家长端是**两个独立的原生小程序包**（发布时使用各自的 AppID）。`utils/request.js`、`utils/format.js`、`utils/labels.js`、`utils/media.js`、`utils/theme.wxss`、`app.wxss` 和通用组件为手工复制的共享代码；后端 API 契约（`/api/miniapp/*` 与 `/api/teacher/*`）是唯一事实来源。修改共享工具时请两边同步。
+
+### 云托管发布
+
+教师端与家长端共用同一个云托管服务，`ENV_ID`、`SERVICE` 配置一致；发布前需要在教师端小程序 AppID 的 downloadFile 合法域名中加入 `MEDIA_HOST`。步骤见 [docs/deploy-cloud-run.md](docs/deploy-cloud-run.md)。
+
 ## 常用命令
 
 ```bash

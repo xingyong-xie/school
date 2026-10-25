@@ -1,0 +1,136 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:else>
+    <view class="card">
+      <view class="field">
+        <view class="field-label">日记对象</view>
+        <view wx:if="{{mode === 'edit'}}" class="target-static">{{targetLabel || "—"}}</view>
+        <block wx:else>
+          <view class="segmented">
+            <view
+              class="segment {{targetType === 'CHILD' ? 'segment--active' : ''}}"
+              data-type="CHILD"
+              bindtap="onTargetType"
+            >某个幼儿</view>
+            <view
+              class="segment {{targetType === 'CLASS' ? 'segment--active' : ''}}"
+              data-type="CLASS"
+              bindtap="onTargetType"
+            >整个班级</view>
+          </view>
+
+          <class-switcher
+            classes="{{classes}}"
+            value="{{classId}}"
+            bind:classchange="onClassChange"
+          />
+
+          <picker
+            wx:if="{{targetType === 'CHILD'}}"
+            mode="selector"
+            range="{{studentNames}}"
+            value="{{studentIndex}}"
+            bindchange="onStudentChange"
+          >
+            <view class="student-picker {{studentNames.length ? '' : 'picker-value--placeholder'}}">
+              {{studentNames[studentIndex] || "该班级暂无在园幼儿"}}
+            </view>
+          </picker>
+        </block>
+      </view>
+
+      <view class="field">
+        <view class="field-label">日期</view>
+        <picker mode="date" value="{{date}}" bindchange="onDateChange">
+          <view class="picker-value">{{date}}</view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <view class="field-label">标题（可选，最多 60 字）</view>
+        <input
+          class="input"
+          value="{{title}}"
+          maxlength="60"
+          placeholder="例如：第一次独立完成拼图"
+          placeholder-class="input-placeholder"
+          bindinput="onTitleInput"
+        />
+      </view>
+
+      <view class="field">
+        <view class="field-label">心情</view>
+        <picker
+          mode="selector"
+          range="{{moodLabels}}"
+          value="{{moodIndex}}"
+          bindchange="onMoodChange"
+        >
+          <view class="picker-value">{{moodLabels[moodIndex]}}</view>
+        </picker>
+      </view>
+
+      <view class="field">
+        <view class="field-label">日记内容</view>
+        <textarea
+          class="textarea content-area"
+          value="{{content}}"
+          maxlength="2000"
+          placeholder="记录孩子在园的表现、进步和有趣瞬间…"
+          placeholder-class="input-placeholder"
+          bindinput="onContentInput"
+        />
+        <view class="counter">{{content.length}} / 2000</view>
+      </view>
+
+      <view class="field photo-field">
+        <view class="field-label">照片（最多 {{maxPhotos}} 张，每张不超过 2MB）</view>
+        <view class="photo-grid">
+          <view class="photo-cell" wx:for="{{photos}}" wx:key="key">
+            <image
+              src="{{item.url || item.tempFilePath}}"
+              mode="aspectFill"
+              data-index="{{index}}"
+              bindtap="previewPhoto"
+            />
+            <view
+              class="photo-remove"
+              data-index="{{index}}"
+              catchtap="onRemovePhoto"
+            >×</view>
+          </view>
+          <view
+            wx:if="{{photos.length < maxPhotos}}"
+            class="photo-cell photo-add"
+            bindtap="onAddPhoto"
+          >
+            <view class="photo-add-icon">＋</view>
+            <view class="photo-add-text">添加照片</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button
+      class="btn btn-primary btn-block publish-btn"
+      loading="{{saving}}"
+      disabled="{{saving}}"
+      bindtap="onSave"
+    >{{mode === 'edit' ? "保存修改" : "发布日记"}}</button>
+
+    <button
+      wx:if="{{mode === 'edit' && canDelete}}"
+      class="btn btn-block delete-btn"
+      bindtap="onDelete"
+    >删除这篇日记</button>
+
+    <view class="footer-hint">
+      日记会实时同步给对应幼儿的家长{{targetType === 'CLASS' ? "和班级家长" : ""}}
+    </view>
+  </block>
+</view>

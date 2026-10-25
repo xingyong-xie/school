@@ -4,11 +4,14 @@ import { headers } from "next/headers";
 import { Prisma, type Student } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { verifySession, type SessionUser } from "@/lib/auth";
-import { todayString } from "@/lib/format";
+import {
+  teacherCanAccessClass,
+  teacherCanAccessStudent,
+} from "@/lib/guards";
+import { isValidDateString, todayString } from "@/lib/format";
 import { fail, type JsonErrorCode, type JsonErrorDetail } from "@/lib/json";
 
 const MAX_BODY_BYTES = 16 * 1024;
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 export class ApiError extends Error {
@@ -78,6 +81,43 @@ export async function requireParent(): Promise<SessionUser> {
   return user;
 }
 
+/** 小程序教师端专用：非教师一律 403。 */
+export async function requireTeacher(): Promise<SessionUser> {
+  const user = await requireApiUser();
+  if (user.role !== "TEACHER") {
+    throw new ApiError("FORBIDDEN", "教师端仅供教师账号使用", 403);
+  }
+  return user;
+}
+
+/** 校验班级在教师负责范围内；无效 ID → 400，越权 → 403。 */
+export async function requireTeacherClass(
+  user: SessionUser,
+  classId: number,
+): Promise<number> {
+  if (!Number.isInteger(classId) || classId <= 0) {
+    throw new ApiError("VALIDATION", "班级 ID 无效", 400);
+  }
+  if (!(await teacherCanAccessClass(user.id, classId))) {
+    throw new ApiError("FORBIDDEN", "无权查看该班级", 403);
+  }
+  return classId;
+}
+
+/** 校验幼儿在教师负责范围内；无效 ID → 400，越权 → 403。 */
+export async function requireTeacherStudent(
+  user: SessionUser,
+  studentId: number,
+): Promise<number> {
+  if (!Number.isInteger(studentId) || studentId <= 0) {
+    throw new ApiError("VALIDATION", "幼儿 ID 无效", 400);
+  }
+  if (!(await teacherCanAccessStudent(user.id, studentId))) {
+    throw new ApiError("FORBIDDEN", "无权查看该幼儿", 403);
+  }
+  return studentId;
+}
+
 /** 校验孩子属于当前家长；不存在或不属于本人时统一返回 404。 */
 export async function requireChild(
   user: SessionUser,
@@ -93,15 +133,23 @@ export async function requireChild(
   return child;
 }
 
-/** 读取 JSON 请求体，限制大小与内容类型。 */
-export async function readJson(req: Request): Promise<Record<string, unknown>> {
+/** 读取 JSON 请求体，限制大小与内容类型；照片接口可单独提高上限。 */
+export async function readJson(
+  req: Request,
+  options: { maxBytes?: number } = {},
+): Promise<Record<string, unknown>> {
+  const maxBytes = options.maxBytes ?? MAX_BODY_BYTES;
   const contentType = req.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
     throw new ApiError("VALIDATION", "请求格式不正确", 400);
   }
+  const declaredLength = Number(req.headers.get("content-length") ?? "");
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    throw new ApiError("VALIDATION", "请求内容过大", 400);
+  }
   const text = await req.text();
   if (!text) return {};
-  if (text.length > MAX_BODY_BYTES) {
+  if (Buffer.byteLength(text, "utf8") > maxBytes) {
     throw new ApiError("VALIDATION", "请求内容过大", 400);
   }
   try {
@@ -154,7 +202,9 @@ export function dateField(
   key: string,
 ): string {
   const value = stringField(body, key, { max: 10 });
-  if (!DATE_PATTERN.test(value)) throw invalid(key, "日期格式应为 YYYY-MM-DD");
+  if (!isValidDateString(value)) {
+    throw invalid(key, "日期应为有效的 YYYY-MM-DD");
+  }
   return value;
 }
 

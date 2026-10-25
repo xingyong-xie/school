@@ -9,7 +9,6 @@ import {
 export const MAX_PHOTOS = 6;
 export const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 export const MAX_TOTAL_PHOTO_BYTES = 8 * 1024 * 1024;
-export const DIARY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const DIARY_MONTH_PATTERN = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 export const ALLOWED_IMAGE_TYPES = [
@@ -88,6 +87,37 @@ export async function readPhotoInputs(
   }
 
   return { ok: true, photos };
+}
+
+/**
+ * 解码小程序上传的 base64 图片，类型只信任魔数。
+ * 兼容带 `data:image/...;base64,` 前缀的字符串。
+ */
+export function decodeImageBase64(
+  raw: unknown,
+): { ok: true; photo: PhotoInput } | { ok: false; error: string } {
+  if (typeof raw !== "string" || !raw) {
+    return { ok: false, error: "照片数据不能为空" };
+  }
+  const payload = raw.startsWith("data:")
+    ? raw.slice(raw.indexOf(",") + 1)
+    : raw;
+  if (!payload) return { ok: false, error: "照片数据不能为空" };
+
+  const data = Buffer.from(payload.replace(/\s/g, ""), "base64");
+  if (data.length === 0) {
+    return { ok: false, error: "照片数据无效" };
+  }
+  if (data.length > MAX_PHOTO_BYTES) {
+    return { ok: false, error: "每张照片不能超过 2MB，请压缩后重试" };
+  }
+
+  const mimeType = sniffImageType(data);
+  if (!mimeType) {
+    return { ok: false, error: "仅支持 JPG / PNG / WebP / GIF 图片" };
+  }
+
+  return { ok: true, photo: { data, mimeType, size: data.length } };
 }
 
 export type DiaryTargetType = "CHILD" | "CLASS";

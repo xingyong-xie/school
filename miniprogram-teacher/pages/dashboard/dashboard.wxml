@@ -1,0 +1,135 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!selectedClassId}}">
+    <view class="hero">
+      <view class="hero-greet">你好，{{dashboard ? dashboard.greetingName : "老师"}}</view>
+      <view class="hero-sub">教师工作台</view>
+    </view>
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="hero">
+      <view class="hero-greet">你好，{{dashboard.greetingName}} 老师</view>
+      <view class="hero-date">{{dashboard.today}} · {{dashboard.selectedClassName}}</view>
+      <view class="hero-sub">今天有 {{dashboard.stats.todayUnrecorded}} 名幼儿待登记考勤</view>
+    </view>
+
+    <view class="card filter-card">
+      <view class="filter-row">
+        <class-switcher
+          classes="{{classes}}"
+          value="{{selectedClassId}}"
+          bind:classchange="onClassChange"
+        />
+        <view class="muted small">{{dashboard.stats.studentCount}} 名在园幼儿</view>
+      </view>
+    </view>
+
+    <view class="stats-grid">
+      <stat-tile class="stat-half" label="在园幼儿" value="{{dashboard.stats.studentCount}}" hint="当前班级" />
+      <stat-tile class="stat-half"
+        label="今日已登记"
+        value="{{dashboard.stats.todayRecorded}}"
+        hint="应登记 {{dashboard.stats.studentCount}} 人"
+        tone="blue"
+      />
+      <stat-tile class="stat-half"
+        label="待审批请假"
+        value="{{dashboard.stats.pendingLeaveCount}}"
+        hint="全部负责班级"
+        tone="amber"
+      />
+      <stat-tile class="stat-half"
+        label="本月日记"
+        value="{{dashboard.stats.monthDiaryCount}}"
+        hint="篇成长记录"
+        tone="green"
+      />
+    </view>
+
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="goStudents">
+        <view class="quick-icon">幼</view>
+        <view class="quick-text">幼儿名单</view>
+      </view>
+      <view class="quick-item" bindtap="goDiaries">
+        <view class="quick-icon">✿</view>
+        <view class="quick-text">成长日记</view>
+      </view>
+      <view class="quick-item" bindtap="goSchedule">
+        <view class="quick-icon">▦</view>
+        <view class="quick-text">课程表</view>
+      </view>
+      <view class="quick-item" bindtap="goFees">
+        <view class="quick-icon">¥</view>
+        <view class="quick-text">收费情况</view>
+      </view>
+    </view>
+
+    <section-card title="今日考勤">
+      <view slot="extra" class="text-link" bindtap="goAttendance">去登记 →</view>
+      <view class="breakdown">
+        <view class="breakdown-item" wx:for="{{dashboard.todayStatusBreakdown}}" wx:key="status">
+          <status-badge text="{{item.label}}" tone="{{item.tone}}" />
+          <view class="breakdown-count">{{item.count}} 人</view>
+        </view>
+      </view>
+      <view wx:if="{{dashboard.unrecorded.length}}" class="unrecorded">
+        <view class="unrecorded-label">未登记</view>
+        <view class="unrecorded-names">
+          <text
+            class="unrecorded-name"
+            wx:for="{{dashboard.unrecorded}}"
+            wx:key="id"
+            data-id="{{item.id}}"
+            bindtap="openStudent"
+          >{{item.name}}</text>
+        </view>
+      </view>
+      <view wx:else class="muted small">今日考勤已全部登记。</view>
+    </section-card>
+
+    <section-card title="待审批请假">
+      <view slot="extra" class="text-link" bindtap="goLeaves">全部 →</view>
+      <block wx:if="{{dashboard.pendingLeaves.length}}">
+        <view class="list-row" wx:for="{{dashboard.pendingLeaves}}" wx:key="id">
+          <view class="list-main">
+            <view class="list-title">{{item.studentName}}</view>
+            <view class="list-sub">{{item.typeLabel}} · {{item.startDate}} 至 {{item.endDate}}</view>
+          </view>
+          <status-badge text="{{item.statusLabel}}" tone="{{item.tone}}" />
+        </view>
+      </block>
+      <empty-state wx:else title="暂无待审批请假" description="家长提交后会显示在这里。" />
+    </section-card>
+
+    <section-card title="最近日记">
+      <view slot="extra" class="text-link" bindtap="goDiaries">查看全部 →</view>
+      <block wx:if="{{dashboard.recentDiaries.length}}">
+        <view class="list-row" wx:for="{{dashboard.recentDiaries}}" wx:key="id" bindtap="goDiaries">
+          <view class="list-main">
+            <view class="list-title">{{item.title || "成长日记"}}</view>
+            <view class="list-sub">
+              {{item.date}} ·
+              {{item.target === 'CLASS' ? item.className : item.studentName}}
+              <text wx:if="{{item.photoCount}}"> · {{item.photoCount}} 张照片</text>
+            </view>
+          </view>
+          <status-badge wx:if="{{item.target === 'CLASS'}}" text="班级" tone="blue" />
+        </view>
+      </block>
+      <empty-state wx:else title="本月还没有日记" description="记录孩子今天的成长瞬间吧。" />
+    </section-card>
+
+    <view class="footer-hint">奇奥德 · 教师工作台</view>
+  </block>
+</view>

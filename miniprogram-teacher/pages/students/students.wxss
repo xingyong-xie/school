@@ -1,0 +1,29 @@
+.status-tabs {
+  display: flex;
+  gap: 8rpx;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: var(--gray-soft);
+}
+
+.status-tab {
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+.status-tab--active {
+  background: var(--surface);
+  color: var(--brand-dark);
+  font-weight: 600;
+  box-shadow: 0 2rpx 6rpx rgba(20, 40, 33, 0.08);
+}
+
+.class-hint {
+  margin-top: 16rpx;
+}
+
+.roster-card {
+  padding: 8rpx 28rpx;
+}

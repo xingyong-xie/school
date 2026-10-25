@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "写成长日记",
+  "usingComponents": {
+    "class-switcher": "/components/class-switcher/class-switcher",
+    "empty-state": "/components/empty-state/empty-state"
+  }
+}

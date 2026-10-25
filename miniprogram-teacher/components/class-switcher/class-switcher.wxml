@@ -1,0 +1,10 @@
+<picker
+  wx:if="{{classes.length > 1}}"
+  mode="selector"
+  range="{{names}}"
+  value="{{index}}"
+  bindchange="onChange"
+>
+  <view class="picker-pill">{{names[index] || placeholder}}<text class="caret"> ▾</text></view>
+</picker>
+<view wx:else class="picker-pill picker-pill--static">{{names[index] || placeholder}}</view>

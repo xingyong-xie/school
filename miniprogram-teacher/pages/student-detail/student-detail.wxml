@@ -1,0 +1,105 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{student}}">
+    <view class="hero student-hero">
+      <view class="hero-avatar">{{initial}}</view>
+      <view class="hero-main">
+        <view class="hero-greet">{{student.name}}</view>
+        <view class="hero-date">
+          {{student.studentNo}} · {{student.className}}
+        </view>
+        <view class="hero-sub">
+          {{student.ageGroup}}<text wx:if="{{student.room}}"> · {{student.room}}</text>
+        </view>
+      </view>
+      <status-badge text="{{student.statusLabel}}" tone="green" />
+    </view>
+
+    <section-card title="基本信息">
+      <view class="info-grid">
+        <view class="info-item">
+          <view class="info-label">性别</view>
+          <view class="info-value">{{student.genderLabel}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">年龄</view>
+          <view class="info-value">{{student.ageYears}} 岁</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">出生日期</view>
+          <view class="info-value">{{student.birthDate}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">入园日期</view>
+          <view class="info-value">{{student.enrollmentDate}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">班级</view>
+          <view class="info-value">{{student.className || "未分班"}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">负责教师</view>
+          <view class="info-value">{{student.teacherName || "—"}}</view>
+        </view>
+      </view>
+      <view wx:if="{{student.address}}" class="info-line">家庭住址：{{student.address}}</view>
+      <view wx:if="{{student.notes}}" class="info-line">备注：{{student.notes}}</view>
+    </section-card>
+
+    <section-card title="家长联系人">
+      <view class="contact-row">
+        <view class="contact-main">
+          <view class="contact-name">{{student.parent ? student.parent.name : "未绑定家长"}}</view>
+          <view class="contact-phone">{{student.parent && student.parent.phone ? student.parent.phone : "暂无电话"}}</view>
+        </view>
+        <button
+          class="btn btn-sm btn-secondary"
+          disabled="{{!student.parent || !student.parent.phone}}"
+          bindtap="callParent"
+        >拨打</button>
+      </view>
+    </section-card>
+
+    <section-card title="本月考勤">
+      <view slot="extra" class="text-link" bindtap="retry">刷新</view>
+      <view class="stats-grid">
+        <stat-tile class="stat-third" label="出勤" value="{{student.monthSummary.presentDays}}" />
+        <stat-tile class="stat-third" label="迟到" value="{{student.monthSummary.lateDays}}" tone="amber" />
+        <stat-tile class="stat-third" label="病假" value="{{student.monthSummary.sickDays}}" tone="blue" />
+        <stat-tile class="stat-third" label="事假" value="{{student.monthSummary.personalDays}}" tone="amber" />
+        <stat-tile class="stat-third" label="缺勤" value="{{student.monthSummary.absentDays}}" tone="rose" />
+        <stat-tile class="stat-third" label="记录" value="{{student.monthSummary.recordedDays}}" tone="green" />
+      </view>
+      <view wx:if="{{student.todayStatus}}" class="today-line">
+        今日：<status-badge text="{{student.todayStatus.label}}" tone="{{student.todayStatus.tone}}" />
+        <text wx:if="{{student.todayStatus.note}}" class="muted small"> {{student.todayStatus.note}}</text>
+      </view>
+    </section-card>
+
+    <section-card title="最近成长日记">
+      <view slot="extra" class="text-link" bindtap="openDiaries">查看全部 →</view>
+      <block wx:if="{{student.recentDiaries.length}}">
+        <view class="list-row" wx:for="{{student.recentDiaries}}" wx:key="id" bindtap="openDiaries">
+          <view class="list-main">
+            <view class="list-title">{{item.title || "成长日记"}}</view>
+            <view class="list-sub">
+              {{item.date}}<text wx:if="{{item.photoCount}}"> · {{item.photoCount}} 张照片</text>
+            </view>
+          </view>
+          <view class="list-arrow">›</view>
+        </view>
+      </block>
+      <empty-state wx:else title="还没有成长日记" description="记录孩子在园的精彩瞬间吧。" />
+    </section-card>
+
+    <view class="detail-actions">
+      <button class="btn btn-secondary" bindtap="openDiaries">查看日记</button>
+      <button class="btn btn-primary" bindtap="writeDiary">写成长日记</button>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,25 @@
+.picker-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 68rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 27rpx;
+  font-weight: 600;
+  max-width: 340rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.picker-pill--static {
+  background: var(--gray-soft);
+  color: var(--muted);
+}
+
+.caret {
+  font-size: 22rpx;
+  opacity: 0.65;
+}

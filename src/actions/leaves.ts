@@ -3,28 +3,15 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import type { LeaveType } from "@prisma/client";
+import { ApiError } from "@/lib/api";
 import { prisma } from "@/lib/db";
-import {
-  requireUser,
-  teacherCanAccessStudent,
-} from "@/lib/guards";
+import { requireUser, userCanAccessStudent } from "@/lib/guards";
 import { int, str, withError, withSuccess } from "@/lib/forms";
-
-const LEAVE_TYPES: LeaveType[] = ["SICK", "PERSONAL", "OTHER"];
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-async function canAccessStudent(
-  user: { id: number; role: "ADMIN" | "TEACHER" | "PARENT" },
-  studentId: number,
-): Promise<boolean> {
-  if (user.role === "ADMIN") return true;
-  if (user.role === "TEACHER") return teacherCanAccessStudent(user.id, studentId);
-  const student = await prisma.student.findFirst({
-    where: { id: studentId, parentId: user.id },
-    select: { id: true },
-  });
-  return Boolean(student);
-}
+import { isValidDateString } from "@/lib/format";
+import {
+  LEAVE_TYPES,
+  reviewLeaveRequest,
+} from "@/lib/services/leaves";
 
 export async function createLeave(formData: FormData): Promise<void> {
   const user = await requireUser();
@@ -37,13 +24,13 @@ export async function createLeave(formData: FormData): Promise<void> {
 
   if (!studentId) redirect(withError("/leaves", "请选择幼儿"));
   if (!LEAVE_TYPES.includes(type)) redirect(withError("/leaves", "请选择请假类型"));
-  if (!DATE_PATTERN.test(startDate) || !DATE_PATTERN.test(endDate)) {
-    redirect(withError("/leaves", "请选择请假日期"));
+  if (!isValidDateString(startDate) || !isValidDateString(endDate)) {
+    redirect(withError("/leaves", "请选择有效的请假日期"));
   }
   if (endDate < startDate) redirect(withError("/leaves", "结束日期不能早于开始日期"));
   if (!reason) redirect(withError("/leaves", "请填写请假事由"));
 
-  if (!(await canAccessStudent(user, studentId))) {
+  if (!(await userCanAccessStudent(user, studentId))) {
     redirect(withError("/leaves", "无权为该幼儿提交请假"));
   }
 
@@ -78,33 +65,27 @@ export async function reviewLeave(formData: FormData): Promise<void> {
     redirect(withError("/leaves", "审批结果无效"));
   }
 
-  const leave = await prisma.leaveRequest.findUnique({
-    where: { id },
-    include: { student: { select: { name: true } } },
-  });
-  if (!leave) redirect(withError("/leaves", "请假申请不存在"));
-  if (leave.status !== "PENDING") redirect(withError("/leaves", "该申请已处理"));
-
-  if (!(await canAccessStudent(user, leave.studentId))) {
-    redirect(withError("/leaves", "无权审批该申请"));
-  }
-
-  await prisma.leaveRequest.update({
-    where: { id },
-    data: {
-      status: decision,
-      reviewedById: user.id,
-      reviewedAt: new Date(),
+  let result: Awaited<ReturnType<typeof reviewLeaveRequest>>;
+  try {
+    result = await reviewLeaveRequest({
+      leaveId: id,
+      decision,
       reviewNote,
-    },
-  });
+      reviewer: user,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      redirect(withError("/leaves", error.message));
+    }
+    throw error;
+  }
 
   revalidatePath("/leaves");
   revalidatePath("/");
   redirect(
     withSuccess(
       "/leaves",
-      `${leave.student.name} 的请假申请已${decision === "APPROVED" ? "批准" : "驳回"}`,
+      `${result.studentName} 的请假申请已${decision === "APPROVED" ? "批准" : "驳回"}`,
     ),
   );
 }

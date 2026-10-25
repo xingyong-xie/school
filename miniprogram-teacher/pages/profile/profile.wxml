@@ -1,0 +1,53 @@
+<view class="container">
+  <view class="profile-hero">
+    <view class="profile-avatar">{{initial}}</view>
+    <view class="profile-info">
+      <view class="profile-name">{{user && user.name ? user.name : "教师"}}</view>
+      <view class="profile-role">
+        教师 · {{classes.length ? classes.length + " 个负责班级" : "暂未分配班级"}}
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{classes.length}}" class="card class-card">
+    <view class="class-label">负责班级</view>
+    <view class="class-list">
+      <view class="class-item" wx:for="{{classes}}" wx:key="id">
+        <view class="class-name">{{item.name}}</view>
+        <view class="class-sub">{{item.ageGroup}} · {{item.studentCount}} 人</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card menu-card">
+    <view class="menu-row" bindtap="openStudents">
+      <view class="menu-icon">幼</view>
+      <view class="menu-label">幼儿名单</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="openDiaries">
+      <view class="menu-icon">✿</view>
+      <view class="menu-label">成长日记</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="openSchedule">
+      <view class="menu-icon">▦</view>
+      <view class="menu-label">班级课程表</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="openFees">
+      <view class="menu-icon">¥</view>
+      <view class="menu-label">收费情况</view>
+      <view class="menu-arrow">›</view>
+    </view>
+    <view class="menu-row" bindtap="onAbout">
+      <view class="menu-icon">ⓘ</view>
+      <view class="menu-label">关于教师端</view>
+      <view class="menu-arrow">›</view>
+    </view>
+  </view>
+
+  <button class="btn btn-block logout-btn" bindtap="onLogout">退出登录</button>
+
+  <view class="footer-hint">奇奥德教师端 v{{version}}</view>
+</view>

@@ -10,4 +10,5 @@ prisma/dev.db-journal
 next-env.d.ts
 tsconfig.tsbuildinfo
 miniprogram/project.private.config.json
+miniprogram-teacher/project.private.config.json
 *.sqlite.json

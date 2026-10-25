@@ -115,9 +115,14 @@ npm run db:import -- --from-json data.sqlite.json --yes --reset-target
 
 > `--reset-target` 会清空目标表，确认目标库正确后再执行。导入脚本默认 dry-run，必须显式 `--yes`。
 
-## 5. 小程序配置
+## 5. 小程序配置（家长端 + 教师端）
 
-编辑 `miniprogram/utils/config.js`：
+两个小程序共用同一个云托管服务，分别使用各自的 AppID：
+
+- 家长端：`miniprogram/`
+- 教师端：`miniprogram-teacher/`
+
+分别编辑各自的 `utils/config.js`：
 
 ```js
 const MODE = "cloud";
@@ -125,13 +130,14 @@ const ENV_ID = "<云开发环境 ID>";
 const SERVICE = "kindergarten-web";
 ```
 
-- 必须使用真实小程序 AppID，并在开发者工具中确认已关联云环境。
-- `project.config.json` 中的 `appid` 从 `touristappid` 改为真实 AppID。
+- 两个小程序都必须使用真实 AppID，并在开发者工具中确认已关联**同一个**云开发环境。
+- 各自 `project.config.json` 中的 `appid` 从 `touristappid` 改为对应真实 AppID。
 - 云托管调用不需要在公众平台配置 request 合法域名。
-- **成长日记照片**通过普通 HTTPS `<image>` 加载，不走 `callContainer`：需要把云托管服务的公网 HTTPS 域名加入公众平台「开发管理 → 服务器域名 → downloadFile 合法域名」，并同步修改 `config.js` 的 `MEDIA_HOST`。
+- **成长日记照片**通过普通 HTTPS `<image>` 加载，不走 `callContainer`：需要把云托管服务的公网 HTTPS 域名分别加入**两个 AppID** 的「开发管理 → 服务器域名 → downloadFile 合法域名」，并同步修改各自 `config.js` 的 `MEDIA_HOST`。
 - 基础库需 ≥ 2.23.0（项目当前使用 3.4.0）。
+- 教师端仅允许 TEACHER 角色登录；`/api/miniapp/*` 对教师返回 403，`/api/teacher/*` 对家长和管理员返回 403。
 
-本地调试可把 `MODE` 改为 `"http"`，继续请求 `http://localhost:3000`。
+本地调试可把 `MODE` 改为 `"http"`，继续请求 `http://localhost:3000`；教师端使用 `t001 / teacher123` 登录。
 
 ## 6. Web 管理端访问
 
@@ -165,6 +171,10 @@ const SERVICE = "kindergarten-web";
 - [ ] 家长可打开成长日记并加载照片；他人图片地址访问返回 404
 - [ ] 班级日记对该班全体家长可见，其他班家长不可见
 - [ ] `t001` / `admin` 访问 `/api/miniapp/*` 返回 403
+- [ ] 教师端 `t001/teacher123` 登录成功，`p001` / `admin` 登录被拒绝
+- [ ] 教师端登记考勤、审批请假、发布带照片的成长日记均成功
+- [ ] `p001` / `admin` 访问 `/api/teacher/*` 返回 403
+- [ ] 教师端照片可正常加载（教师 AppID 已加入 downloadFile 合法域名）
 - [ ] 各表行数与源库一致
 - [ ] 出生日期、缴费时间、当天考勤显示正确（时区 Asia/Shanghai）
 - [ ] 重启服务不会重复建表或重复迁移

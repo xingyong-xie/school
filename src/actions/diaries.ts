@@ -3,29 +3,19 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import type { DiaryMood } from "@prisma/client";
-import { prisma } from "@/lib/db";
+import { ApiError } from "@/lib/api";
 import { requireUser } from "@/lib/guards";
 import { int, str, withError, withSuccess } from "@/lib/forms";
 import { DIARY_MOODS } from "@/lib/constants";
+import { isValidDateString } from "@/lib/format";
+import { readPhotoInputs } from "@/lib/diary";
 import {
-  canManageDiaryEntry,
-  canManageDiaryTarget,
-  DIARY_DATE_PATTERN,
-  MAX_PHOTOS,
-  readPhotoInputs,
-} from "@/lib/diary";
-
-type DiaryTarget = {
-  studentId: number | null;
-  classId: number | null;
-};
-
-type DiaryFields = {
-  date: string;
-  title: string | null;
-  content: string;
-  mood: DiaryMood | null;
-};
+  createDiaryEntry,
+  deleteDiaryEntry,
+  updateDiaryEntry,
+  type DiaryFields,
+  type DiaryTarget,
+} from "@/lib/services/diaries";
 
 function readDiaryFields(
   formData: FormData,
@@ -35,8 +25,8 @@ function readDiaryFields(
   const content = str(formData, "content");
   const mood = str(formData, "mood");
 
-  if (!DIARY_DATE_PATTERN.test(date)) {
-    return { ok: false, error: "请选择日记日期" };
+  if (!isValidDateString(date)) {
+    return { ok: false, error: "请选择有效的日记日期" };
   }
   if (title.length > 60) {
     return { ok: false, error: "标题不能超过 60 个字符" };
@@ -106,53 +96,23 @@ export async function createDiary(formData: FormData): Promise<void> {
   if (!targetResult.ok) redirect(withError(back, targetResult.error));
   const { target } = targetResult;
 
-  if (!(await canManageDiaryTarget(user, target))) {
-    redirect(
-      withError(
-        back,
-        target.classId !== null
-          ? "无权为该班级写日记"
-          : "无权为该幼儿写成长日记",
-      ),
-    );
-  }
-
   const fields = readDiaryFields(formData);
   if (!fields.ok) redirect(withError(back, fields.error));
 
   const photoResult = await readPhotoInputs(formData);
   if (!photoResult.ok) redirect(withError(back, photoResult.error));
 
-  if (target.studentId !== null) {
-    const student = await prisma.student.findUnique({
-      where: { id: target.studentId },
-      select: { id: true },
+  try {
+    await createDiaryEntry({
+      author: user,
+      target,
+      fields: fields.data,
+      photos: photoResult.photos,
     });
-    if (!student) redirect(withError(back, "幼儿档案不存在"));
-  } else if (target.classId !== null) {
-    const schoolClass = await prisma.schoolClass.findUnique({
-      where: { id: target.classId },
-      select: { id: true },
-    });
-    if (!schoolClass) redirect(withError(back, "班级不存在"));
+  } catch (error) {
+    if (error instanceof ApiError) redirect(withError(back, error.message));
+    throw error;
   }
-
-  await prisma.diaryEntry.create({
-    data: {
-      studentId: target.studentId,
-      classId: target.classId,
-      ...fields.data,
-      authorId: user.id,
-      photos: {
-        create: photoResult.photos.map((photo, index) => ({
-          data: photo.data,
-          mimeType: photo.mimeType,
-          size: photo.size,
-          sortOrder: index,
-        })),
-      },
-    },
-  });
 
   revalidatePath("/diaries");
   if (target.studentId !== null) {
@@ -174,64 +134,30 @@ export async function updateDiary(formData: FormData): Promise<void> {
   const id = int(formData, "id");
   if (!id) redirect(withError(back, "参数错误"));
 
-  const entry = await prisma.diaryEntry.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      studentId: true,
-      classId: true,
-      authorId: true,
-      photos: { select: { id: true }, orderBy: { sortOrder: "asc" } },
-    },
-  });
-  if (!entry) redirect(withError(back, "成长日记不存在"));
-  if (!(await canManageDiaryEntry(user, entry))) {
-    redirect(withError(back, "无权编辑该日记"));
-  }
-
   const fields = readDiaryFields(formData);
   if (!fields.ok) redirect(withError(back, fields.error));
 
   const newPhotos = await readPhotoInputs(formData);
   if (!newPhotos.ok) redirect(withError(back, newPhotos.error));
 
-  const ownedIds = new Set(entry.photos.map((photo) => photo.id));
-  const removeIds = formData
+  const removePhotoIds = formData
     .getAll("removePhotoIds")
     .map((value) => Number(value))
-    .filter((value) => Number.isInteger(value) && value > 0 && ownedIds.has(value));
-  const removed = new Set(removeIds);
-  const kept = entry.photos.filter((photo) => !removed.has(photo.id));
+    .filter((value) => Number.isInteger(value) && value > 0);
 
-  if (kept.length + newPhotos.photos.length > MAX_PHOTOS) {
-    redirect(withError(back, `每篇日记最多 ${MAX_PHOTOS} 张照片`));
+  let entry: Awaited<ReturnType<typeof updateDiaryEntry>>;
+  try {
+    entry = await updateDiaryEntry({
+      author: user,
+      entryId: id,
+      fields: fields.data,
+      newPhotos: newPhotos.photos,
+      removePhotoIds,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) redirect(withError(back, error.message));
+    throw error;
   }
-
-  await prisma.$transaction([
-    prisma.diaryPhoto.deleteMany({
-      where: { entryId: id, id: { in: removeIds } },
-    }),
-    ...kept.map((photo, index) =>
-      prisma.diaryPhoto.update({
-        where: { id: photo.id },
-        data: { sortOrder: index },
-      }),
-    ),
-    prisma.diaryEntry.update({
-      where: { id },
-      data: {
-        ...fields.data,
-        photos: {
-          create: newPhotos.photos.map((photo, index) => ({
-            data: photo.data,
-            mimeType: photo.mimeType,
-            size: photo.size,
-            sortOrder: kept.length + index,
-          })),
-        },
-      },
-    }),
-  ]);
 
   revalidatePath("/diaries");
   if (entry.studentId !== null) {
@@ -248,22 +174,13 @@ export async function deleteDiary(formData: FormData): Promise<void> {
   const id = int(formData, "id");
   if (!id) redirect(withError(back, "参数错误"));
 
-  const entry = await prisma.diaryEntry.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      studentId: true,
-      classId: true,
-      authorId: true,
-      date: true,
-    },
-  });
-  if (!entry) redirect(withError(back, "成长日记不存在"));
-  if (!(await canManageDiaryEntry(user, entry))) {
-    redirect(withError(back, "无权删除该日记"));
+  let entry: Awaited<ReturnType<typeof deleteDiaryEntry>>;
+  try {
+    entry = await deleteDiaryEntry(user, id);
+  } catch (error) {
+    if (error instanceof ApiError) redirect(withError(back, error.message));
+    throw error;
   }
-
-  await prisma.diaryEntry.delete({ where: { id } });
 
   revalidatePath("/diaries");
   if (entry.studentId !== null) {

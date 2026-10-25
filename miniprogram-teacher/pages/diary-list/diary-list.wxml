@@ -1,0 +1,102 @@
+<view class="container container--with-fab">
+  <view class="card filter-card">
+    <view class="filter-row">
+      <view class="picker-pill picker-pill--static">{{targetName || "请选择班级"}}</view>
+      <view class="month-control">
+        <view class="month-arrow" bindtap="prevMonth">‹</view>
+        <picker mode="date" fields="month" value="{{month}}" bindchange="onMonthChange">
+          <view class="month-text">{{month}}</view>
+        </picker>
+        <view class="month-arrow" bindtap="nextMonth">›</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!classId && !studentId}}">
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:else>
+    <view class="stats-grid">
+      <stat-tile class="stat-third" label="本月日记" value="{{summary.entryCount}}" hint="篇成长记录" />
+      <stat-tile class="stat-third" label="照片" value="{{summary.photoCount}}" tone="blue" />
+      <stat-tile class="stat-third" label="我写的" value="{{summary.mineCount}}" tone="amber" />
+    </view>
+
+    <block wx:if="{{entries.length}}">
+      <view
+        class="card diary-entry"
+        wx:for="{{entries}}"
+        wx:for-index="entryIndex"
+        wx:key="id"
+      >
+        <view class="entry-head">
+          <text class="entry-date">{{item.date}}</text>
+          <status-badge wx:if="{{item.target === 'CLASS'}}" text="班级" tone="blue" />
+          <status-badge
+            wx:if="{{item.moodLabel}}"
+            text="{{item.moodLabel}}"
+            tone="{{item.moodTone}}"
+          />
+        </view>
+
+        <view wx:if="{{item.title}}" class="entry-title">{{item.title}}</view>
+        <view class="entry-content">{{item.content}}</view>
+
+        <view wx:if="{{item.photoUrls.length}}" class="photo-grid">
+          <view
+            class="photo-cell"
+            wx:for="{{item.photoUrls}}"
+            wx:for-item="photoUrl"
+            wx:for-index="photoIndex"
+            wx:key="photoIndex"
+            data-entry="{{entryIndex}}"
+            data-photo="{{photoIndex}}"
+            bindtap="onPhotoTap"
+          >
+            <image src="{{photoUrl}}" mode="aspectFill" lazy-load />
+          </view>
+        </view>
+
+        <view class="entry-foot">
+          <view class="entry-author">
+            {{item.authorName || "园务"}}<text wx:if="{{item.studentName}}"> · {{item.studentName}}</text>
+          </view>
+          <view class="entry-actions">
+            <view
+              wx:if="{{item.canEdit}}"
+              class="entry-action"
+              data-id="{{item.id}}"
+              bindtap="editEntry"
+            >编辑</view>
+            <view
+              wx:if="{{item.canDelete}}"
+              class="entry-action entry-action--danger"
+              data-id="{{item.id}}"
+              bindtap="deleteEntry"
+            >删除</view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <empty-state
+      wx:else
+      title="本月暂无成长日记"
+      description="记录孩子今天的成长瞬间吧，可切换月份查看历史。"
+    />
+
+    <view class="footer-hint">奇奥德 · 记录每一个成长瞬间</view>
+  </block>
+
+  <button wx:if="{{classId || studentId}}" class="fab" bindtap="writeDiary">＋ 写成长日记</button>
+</view>

@@ -1,0 +1,54 @@
+<view class="container">
+  <view wx:if="{{classes.length}}" class="card filter-card">
+    <picker
+      wx:if="{{classes.length > 1}}"
+      mode="selector"
+      range="{{classNames}}"
+      value="{{classIndex}}"
+      bindchange="onClassChange"
+    >
+      <view class="picker-pill">{{className}}<text class="caret"> ▾</text></view>
+    </picker>
+    <view wx:else class="picker-pill picker-pill--static">{{className}}</view>
+    <view class="muted small">{{ageGroup}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-text">加载中…</view>
+
+  <block wx:elif="{{error}}">
+    <empty-state title="加载失败" description="{{error}}" actionText="重新加载" bind:action="retry" />
+  </block>
+
+  <block wx:elif="{{!classes.length}}">
+    <empty-state
+      title="暂未分配班级"
+      description="请联系园务管理员为教师账号分配负责班级。"
+    />
+  </block>
+
+  <block wx:elif="{{!hasItems}}">
+    <empty-state
+      title="暂无课程安排"
+      description="园务添加课程后会显示在这里。"
+    />
+  </block>
+
+  <block wx:else>
+    <view wx:for="{{weekdays}}" wx:key="weekday">
+      <view wx:if="{{item.items.length}}" class="card day-card">
+        <view class="day-head">
+          <view class="day-label">{{item.label}}</view>
+          <view class="muted small">{{item.items.length}} 节课</view>
+        </view>
+        <view class="course-row" wx:for="{{item.items}}" wx:for-item="course" wx:key="id">
+          <view class="course-time">{{course.startTime}}<text class="course-dash">-</text>{{course.endTime}}</view>
+          <view class="course-main">
+            <view class="course-subject">{{course.subject}}</view>
+            <view wx:if="{{course.teacherName}}" class="course-teacher">{{course.teacherName}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="footer-hint">课程表由园务统一安排</view>
+  </block>
+</view>
